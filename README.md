@@ -1,10 +1,13 @@
 # yapflame
 
-[![CI](https://github.com/bekerk/yapflame/actions/workflows/ci.yml/badge.svg)](https://github.com/bekerk/yapflame/actions/workflows/ci.yml)
-[![PyPI version](https://img.shields.io/pypi/v/yapflame.svg)](https://pypi.org/project/yapflame/)
-[![Python versions](https://img.shields.io/pypi/pyversions/yapflame.svg)](https://pypi.org/project/yapflame/)
-[![Last commit](https://img.shields.io/github/last-commit/bekerk/yapflame)](https://github.com/bekerk/yapflame/commits/main)
-[![License](https://img.shields.io/github/license/bekerk/yapflame)](https://github.com/bekerk/yapflame/blob/main/LICENSE)
+<p align="center">
+    <a href="https://github.com/bekerk/yapflame/actions/workflows/ci.yml"><img src="https://github.com/bekerk/yapflame/actions/workflows/ci.yml/badge.svg?branch=main"></a>
+    <a href="https://pypi.org/project/yapflame/"><img src="https://img.shields.io/pypi/v/yapflame.svg"></a>
+    <a href="https://pypi.org/project/yapflame/"><img src="https://img.shields.io/pypi/dw/yapflame.svg"></a>
+    <a href="https://pypi.org/project/yapflame/"><img src="https://img.shields.io/pypi/pyversions/yapflame.svg"></a>
+    <a href="https://github.com/bekerk/yapflame/commits/"><img src="https://img.shields.io/github/last-commit/bekerk/yapflame.svg"></a>
+    <a href="https://github.com/bekerk/yapflame/blob/main/LICENSE"><img src="https://img.shields.io/github/license/bekerk/yapflame.svg"></a>
+</p>
 
 Simple [yappi](https://github.com/sumerc/yappi) flamegraphs.
 
