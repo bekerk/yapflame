@@ -12,7 +12,7 @@
 Simple [yappi](https://github.com/sumerc/yappi) flamegraphs.
 
 <p align="center">
-    <img src="./assets/yapflame.png" />
+    <img src="https://raw.githubusercontent.com/bekerk/yapflame/refs/heads/main/assets/yapflame.png" />
 </p>
 
 ## Installation
