@@ -17,3 +17,5 @@ wheels/
 
 # pyre 
 .pyre/
+
+.DS_Store

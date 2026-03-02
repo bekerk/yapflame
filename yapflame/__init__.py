@@ -1,4 +1,4 @@
-"""dead simple yappi flamegraphs."""
+"""Simple yappi flamegraphs."""
 
 from __future__ import annotations
 

@@ -11,6 +11,10 @@
 
 Simple [yappi](https://github.com/sumerc/yappi) flamegraphs.
 
+<p align="center">
+    <img src="./assets/yapflame.png" />
+</p>
+
 ## Installation
 
 ```bash
