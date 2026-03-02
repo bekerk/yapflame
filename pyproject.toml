@@ -1,0 +1,47 @@
+[project]
+name = "yapflame"
+version = "0.1.0"
+description = "dead simple yappi flamegraphs"
+readme = "README.md"
+authors = [
+    { name = "bekerk" },
+]
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+keywords = [
+    "flamegraph",
+    "profiler",
+    "profiling",
+    "yappi",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "yappi>=1.6",
+]
+
+[project.urls]
+Homepage = "https://github.com/bekerk/yapflame"
+Issues = "https://github.com/bekerk/yapflame/issues"
+Releases = "https://github.com/bekerk/yapflame/releases"
+Repository = "https://github.com/bekerk/yapflame"
+
+[project.scripts]
+yapflame = "yapflame:_cli_main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pyre-check>=0.9.25",
+    "pytest>=8.0",
+    "ruff>=0.15.4",
+]

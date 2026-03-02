@@ -1,0 +1,5 @@
+{
+  "source_directories": ["yapflame"],
+  "search_path": [{"site-package": "yappi", "is_toplevel_module": true}],
+  "strict": true
+}
