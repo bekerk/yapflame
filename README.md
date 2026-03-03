@@ -9,7 +9,7 @@
     <a href="https://github.com/bekerk/yapflame/blob/main/LICENSE"><img src="https://img.shields.io/github/license/bekerk/yapflame.svg"></a>
 </p>
 
-Simple [yappi](https://github.com/sumerc/yappi) flamegraphs.
+Simple [yappi](https://github.com/sumerc/yappi) flamegraphs with support for multi-threading.
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/bekerk/yapflame/refs/heads/main/assets/yapflame.png" />
@@ -31,8 +31,8 @@ from yapflame import profile
 with profile() as p:
     do_work()
 
-p.open()       # browser
-p.save("o.html")  # file
+p.open() # browser
+p.save("o.html") # file
 ```
 
 `enabled=False` to noop:
