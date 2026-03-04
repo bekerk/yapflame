@@ -11,12 +11,12 @@ from typing import Any
 import yappi
 
 from yapflame.html import generate
-from yapflame.tree import build_combined, build_flame_tree
+from yapflame.tree import build_flame_tree
 
 __all__ = ["profile", "Result", "__version__"]
 __version__: str = _pkg_version("yapflame")
 
-_EMPTY = {"combined": {"name": "empty", "value": 0, "children": []}, "threads": []}
+_EMPTY = {"threads": []}
 
 
 class Result:
@@ -33,7 +33,6 @@ class Result:
             return _EMPTY
         if self._data is None:
             thread_stats = yappi.get_thread_stats()
-            combined = build_combined()
             threads: list[dict[str, Any]] = []
             for ts in thread_stats:
                 tree = build_flame_tree(ctx_id=ts.id)
@@ -43,7 +42,7 @@ class Result:
                         "data": tree,
                     }
                 )
-            self._data = {"combined": combined, "threads": threads}
+            self._data = {"threads": threads}
         return self._data
 
     def save(self, path: str) -> None:

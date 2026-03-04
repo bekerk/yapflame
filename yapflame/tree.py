@@ -85,20 +85,3 @@ def build_flame_tree(ctx_id: int) -> dict[str, Any]:
     if len(roots) == 1:
         return roots[0]
     return {"name": "(thread root)", "value": 0, "children": roots}
-
-
-def build_combined() -> dict[str, Any]:
-    thread_stats = yappi.get_thread_stats()
-    children: list[dict[str, Any]] = []
-    for ts in thread_stats:
-        tree = build_flame_tree(ctx_id=ts.id)
-        children.append(
-            {
-                "name": f"{ts.name} (id={ts.id}, {ts.ttot:.2f}s)",
-                "value": 0,
-                "children": tree["children"]
-                if tree["name"] == "(thread root)"
-                else [tree],
-            }
-        )
-    return {"name": "all threads", "value": 0, "children": children}

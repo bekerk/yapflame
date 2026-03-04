@@ -1,6 +1,6 @@
 [project]
 name = "yapflame"
-version = "0.1.2"
+version = "0.1.3"
 description = "Simple yappi flamegraphs"
 readme = "README.md"
 authors = [

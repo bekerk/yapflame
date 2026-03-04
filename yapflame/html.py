@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import base64
+import gzip
 import json
 from datetime import datetime, timezone
 from importlib.resources import files
@@ -13,12 +15,46 @@ def _load_vendor(name: str) -> str:
 
 
 def _safe_json(obj: Any) -> str:
-    return json.dumps(obj).replace("</", r"<\/")
+    return json.dumps(obj, separators=(",", ":")).replace("</", r"<\/")
+
+
+def _intern_strings(flame_data: dict[str, Any]) -> tuple[list[str], dict[str, Any]]:
+    table: dict[str, int] = {}
+    strings: list[str] = []
+
+    def _walk(node: dict[str, Any]) -> dict[str, Any]:
+        f = node.get("f")
+        if f is not None:
+            idx = table.get(f)
+            if idx is None:
+                idx = len(strings)
+                table[f] = idx
+                strings.append(f)
+            node = {**node, "f": idx}
+        children = node.get("children")
+        if children:
+            node = {**node, "children": [_walk(c) for c in children]}
+        return node
+
+    new_threads = []
+    for t in flame_data["threads"]:
+        new_threads.append({**t, "data": _walk(t["data"])})
+
+    return strings, {"threads": new_threads}
+
+
+def _compress(data_json: str) -> str:
+    compressed = gzip.compress(data_json.encode("utf-8"), compresslevel=6)
+    return base64.b64encode(compressed).decode("ascii")
 
 
 def generate(flame_data: dict[str, Any]) -> str:
     threads = flame_data["threads"]
-    data_json = _safe_json(flame_data)
+
+    strings, compacted = _intern_strings(flame_data)
+    payload = {"s": strings, "t": compacted["threads"]}
+    compressed_b64 = _compress(_safe_json(payload))
+
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
     d3_js = _load_vendor("d3.v7.min.js")
@@ -108,6 +144,12 @@ h1 {{ font-size: 15px; font-weight: normal; color: #666; margin: 0 0 2px; }}
   vertical-align: middle;
 }}
 .legend a {{ color: #aaa; }}
+#loading {{
+  color: #999;
+  font-size: 13px;
+  padding: 40px 0;
+  text-align: center;
+}}
 </style>
 </head>
 <body>
@@ -122,13 +164,45 @@ h1 {{ font-size: 15px; font-weight: normal; color: #666; margin: 0 0 2px; }}
 
 <div class="legend"><span class="swatch" style="background:rgb(225,140,65)"></span>app <span class="swatch" style="background:rgb(105,215,105)"></span>stdlib <span class="swatch" style="background:rgb(75,205,240)"></span>third-party <span class="swatch" style="background:rgb(235,225,105)"></span>builtin <a href="https://www.brendangregg.com/flamegraphs.html" target="_blank">?</a></div>
 <div id="tip"></div>
-<div id="chart"></div>
+<div id="chart"><div id="loading">decompressing\u2026</div></div>
 
 <script>{d3_js}</script>
 <script>{flamegraph_js}</script>
 <script>
-var FLAME_DATA = {data_json};
-var chart = null;
+var FLAME_DATA = null, chart = null;
+
+(function() {{
+  var raw = atob("{compressed_b64}");
+  var bytes = new Uint8Array(raw.length);
+  for (var i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+  var ds = new DecompressionStream('gzip');
+  var w = ds.writable.getWriter(); w.write(bytes); w.close();
+  new Response(ds.readable).text().then(function(text) {{
+    var p = JSON.parse(text), S = p.s, T = p.t;
+    function hydrate(n) {{
+      if (typeof n.f === 'number') n.f = S[n.f];
+      var ch = n.children;
+      if (ch) for (var i = 0; i < ch.length; i++) hydrate(ch[i]);
+    }}
+    for (var i = 0; i < T.length; i++) hydrate(T[i].data);
+    FLAME_DATA = {{ threads: T, combined: buildCombined(T) }};
+    document.getElementById('loading').remove();
+    render(FLAME_DATA.combined);
+  }});
+}})();
+
+function buildCombined(threads) {{
+  return {{
+    name: 'all threads', value: 0,
+    children: threads.map(function(t) {{
+      var d = t.data;
+      var label = t.label.split(',')[0] + ')';
+      return d.name === '(thread root)'
+        ? {{name: label, value: 0, children: d.children}}
+        : {{name: label, value: 0, children: [d]}};
+    }})
+  }};
+}}
 
 function render(data) {{
   document.getElementById('chart').innerHTML = '';
@@ -180,6 +254,7 @@ function showTip(d) {{
 }}
 
 function selectView(idx, btn) {{
+  if (!FLAME_DATA) return;
   document.querySelectorAll('.bar button').forEach(function(b) {{ b.className = ''; }});
   btn.className = 'on';
   render(idx < 0 ? FLAME_DATA.combined : FLAME_DATA.threads[idx].data);
@@ -197,7 +272,6 @@ function esc(s) {{
   d.textContent = s; return d.innerHTML;
 }}
 
-render(FLAME_DATA.combined);
 window.addEventListener('resize', function() {{
   var a = document.querySelector('.bar button.on');
   if (a) a.click();

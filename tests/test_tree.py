@@ -9,7 +9,6 @@ import yappi
 from yapflame.tree import (
     _PACKAGE_DIR,
     _is_internal,
-    build_combined,
     build_flame_tree,
     short_name,
 )
@@ -90,18 +89,6 @@ def test_multithreaded():
     for t in ts:
         tree = build_flame_tree(ctx_id=t.id)
         assert "children" in tree
-
-
-def test_combined():
-    yappi.start()
-    t = threading.Thread(target=_do_work)
-    t.start()
-    t.join()
-    _do_work()
-    yappi.stop()
-    combined = build_combined()
-    assert combined["name"] == "all threads"
-    assert len(combined["children"]) >= 2
 
 
 def test_empty_profile():

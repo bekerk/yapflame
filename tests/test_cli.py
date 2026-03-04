@@ -35,6 +35,7 @@ def test_profile(tmp_path: Path):
     out = tmp_path / "out.html"
     script.write_text("import math\nfor i in range(1000): math.sqrt(i)\n")
     r = _run("-o", str(out), str(script))
+    assert "DecompressionStream" in out.read_text()
     assert "FLAME_DATA" in out.read_text()
     assert "wrote" in r.stdout
 

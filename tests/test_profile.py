@@ -22,7 +22,6 @@ def test_result_bool():
 
 def test_disabled_empty():
     r = Result(enabled=False)
-    assert r.data["combined"]["name"] == "empty"
     assert r.data["threads"] == []
 
 
@@ -49,7 +48,7 @@ def test_disabled():
     with profile(enabled=False) as p:
         _work()
     assert not p
-    assert p.data["combined"]["name"] == "empty"
+    assert p.data["threads"] == []
 
 
 def test_bad_clock():
@@ -62,7 +61,7 @@ def test_save(tmp_path: Path):
         _work()
     path = tmp_path / "test.html"
     p.save(str(path))
-    assert "FLAME_DATA" in path.read_text()
+    assert "DecompressionStream" in path.read_text()
 
 
 def test_cleanup():
